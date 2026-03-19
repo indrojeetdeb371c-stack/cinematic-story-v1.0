@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Hind Siliguri", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Hind Siliguri", "Inter", serif;
+  
+  --color-gold: #D4AF37;
+  --color-dark-bg: #0A0A0A;
+  --color-card-bg: #1A1A1A;
+}
+
+@layer base {
+  body {
+    @apply bg-dark-bg text-white font-sans antialiased;
+  }
+}
+
+.glass-card {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #F9E076 50%, #B8860B 100%);
+}
+
+.text-gold {
+  @apply text-gold;
+}
+
+/* Custom Calendar Styles */
+.calendar-day-booked {
+  @apply bg-red-600 text-white border border-red-700 shadow-inner;
+}
+
+.calendar-day-available {
+  @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-pointer hover:bg-emerald-500/40 transition-colors;
+}

@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "Review": {
+      "title": "Review",
+      "description": "A client review for the photography service.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user ID of the reviewer." },
+        "name": { "type": "string", "description": "The name of the reviewer." },
+        "photoURL": { "type": "string", "description": "The photo URL of the reviewer." },
+        "comment": { "type": "string", "description": "The review comment." },
+        "rating": { "type": "number", "description": "The star rating (1-5)." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the review was created." }
+      },
+      "required": ["uid", "name", "comment", "rating", "createdAt"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "An event booking request.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user ID of the person booking." },
+        "name": { "type": "string", "description": "The name of the person booking." },
+        "phone": { "type": "string", "description": "Contact phone number." },
+        "date": { "type": "string", "description": "The event date." },
+        "location": { "type": "string", "description": "The event location." },
+        "package": { "type": "string", "description": "The selected package." },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"], "description": "Booking status." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the booking was requested." }
+      },
+      "required": ["uid", "name", "phone", "date", "location", "package", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Collection of client reviews."
+    },
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Collection of event bookings."
+    }
+  }
+}

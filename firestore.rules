@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: reviews
+    // Fields:
+    //   - uid: string (required) - User ID
+    //   - name: string (required) - User Display Name
+    //   - photoURL: string (optional) - User Photo
+    //   - comment: string (required, max 1000 chars) - Review text
+    //   - rating: number (required, 1-5) - Star rating
+    //   - createdAt: timestamp (required) - Creation time
+    //
+    // Collection: bookings
+    // Fields:
+    //   - uid: string (required) - User ID
+    //   - name: string (required) - Name
+    //   - phone: string (required) - Phone
+    //   - date: string (required) - Event Date
+    //   - location: string (required) - Location
+    //   - package: string (required) - Package name
+    //   - status: string (required, enum) - pending, approved, rejected
+    //   - createdAt: timestamp (required) - Creation time
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "indrojeetdeb371c@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    // Review Validation
+    function isValidReview(data) {
+      return data.keys().hasAll(['uid', 'name', 'comment', 'rating', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.comment is string && data.comment.size() > 0 && data.comment.size() <= 1000 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.createdAt is timestamp;
+    }
+
+    // Booking Validation
+    function isValidBooking(data) {
+      return data.keys().hasAll(['uid', 'name', 'phone', 'date', 'location', 'package', 'status', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             data.name is string && data.name.size() > 0 &&
+             data.phone is string && data.phone.size() >= 10 &&
+             data.date is string &&
+             data.location is string &&
+             data.package is string &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             data.createdAt is timestamp;
+    }
+
+    // Rules
+    match /reviews/{reviewId} {
+      allow read: if true; // Publicly readable
+      allow create: if isAuthenticated() && isValidReview(request.resource.data);
+      allow update, delete: if isAdmin(); // Only admin can moderate reviews
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if isAdmin() 
+                  || (isAuthenticated() && resource.data.uid == request.auth.uid)
+                  || (resource.data.status == 'approved'); // Allow seeing taken dates for calendar
+      allow create: if isAuthenticated() && isValidBooking(request.resource.data) && request.resource.data.status == 'pending';
+      allow update, delete: if isAdmin();
+    }
+    
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+  }
+}
