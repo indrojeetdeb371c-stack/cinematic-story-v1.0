@@ -54,20 +54,23 @@ app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
-let isConnected = false;
+let cachedDb: typeof mongoose | null = null;
 
 async function connectDB() {
-  if (isConnected) return;
+  if (cachedDb) return cachedDb;
+  
   if (!MONGODB_URI) {
     console.error('MONGODB_URI is not defined in environment variables');
-    return;
+    return null;
   }
+  
   try {
-    await mongoose.connect(MONGODB_URI);
-    isConnected = true;
+    cachedDb = await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
+    return cachedDb;
   } catch (err) {
     console.error('MongoDB connection error:', err);
+    return null;
   }
 }
 
