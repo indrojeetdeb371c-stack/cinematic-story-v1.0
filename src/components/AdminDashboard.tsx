@@ -48,10 +48,7 @@ import {
   orderBy, 
   updateDoc, 
   deleteDoc, 
-  doc,
-  signInWithPopup,
-  googleProvider,
-  auth
+  doc 
 } from '../firebase';
 
 export default function AdminDashboard() {
@@ -642,29 +639,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleGoogleAdminLogin = async () => {
-    setLoginError('');
-    setIsLoggingIn(true);
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      
-      // Check if the logged in user is the admin
-      if (user.email === "indrojeetdeb371c@gmail.com") {
-        sessionStorage.setItem('admin_session_active', 'true');
-        sessionStorage.setItem('admin_email', user.email);
-        setIsAdminSessionActive(true);
-      } else {
-        setLoginError('আপনি এডমিন নন। আপনার ইমেইল: ' + user.email);
-      }
-    } catch (error) {
-      console.error("Google login error:", error);
-      setLoginError('Google লগইন করতে সমস্যা হয়েছে।');
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
   if (!isAdminSessionActive && !loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-dark-bg p-4 relative overflow-hidden">
@@ -726,30 +700,8 @@ export default function AdminDashboard() {
                   লগইন হচ্ছে...
                 </>
               ) : (
-                <>
-                  <Lock className="w-5 h-5" />
-                  লগইন করুন
-                </>
+                'লগইন করুন'
               )}
-            </button>
-
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-dark-bg px-4 text-gray-500">অথবা</span>
-              </div>
-            </div>
-
-            <button 
-              type="button"
-              onClick={handleGoogleAdminLogin}
-              disabled={isLoggingIn}
-              className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-            >
-              <Globe className="w-5 h-5 text-gold" />
-              Google দিয়ে লগইন করুন
             </button>
             <a href="/" className="block text-center text-sm text-gray-500 hover:text-gold transition-colors mt-4">হোমে ফিরে যান</a>
           </form>
@@ -947,7 +899,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="p-4 space-y-4">
                     {reviews.slice(0, 5).map((r) => (
-                      <div key={r._id} className="flex items-start gap-3 p-3 rounded-xl bg-white/5">
+                      <div key={r.id} className="flex items-start gap-3 p-3 rounded-xl bg-white/5">
                         <img src={r.photoURL} alt="" className="w-8 h-8 rounded-full border border-gold/20" referrerPolicy="no-referrer" />
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
