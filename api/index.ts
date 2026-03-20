@@ -1,4 +1,4 @@
-import { app, connectDB } from '../app';
+import { app, connectDB } from './app.js';
 
 export default async (req: any, res: any) => {
   console.log(`Vercel API Request: ${req.method} ${req.url}`);

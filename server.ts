@@ -1,5 +1,5 @@
 import express from 'express';
-import { app, connectDB } from './app';
+import { app, connectDB } from './api/app.js';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 

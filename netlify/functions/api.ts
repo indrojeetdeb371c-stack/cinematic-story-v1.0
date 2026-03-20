@@ -1,5 +1,5 @@
 import serverless from 'serverless-http';
-import { app, connectDB } from '../../app';
+import { app, connectDB } from '../../api/app.js';
 
 const serverlessApp = serverless(app);
 
