@@ -52,20 +52,24 @@ app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
-let isConnected = false;
 
 async function connectDB() {
-  if (isConnected) return;
+  if (mongoose.connection.readyState >= 1) {
+    return mongoose.connection;
+  }
+  
   if (!MONGODB_URI) {
     console.error('MONGODB_URI is not defined in environment variables');
-    return;
+    throw new Error('MONGODB_URI is missing');
   }
+
   try {
-    await mongoose.connect(MONGODB_URI);
-    isConnected = true;
+    const conn = await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
+    return conn;
   } catch (err) {
     console.error('MongoDB connection error:', err);
+    throw err;
   }
 }
 
@@ -157,9 +161,14 @@ const Admin = mongoose.model('Admin', AdminSchema);
 // API Routes
 const apiRouter = express.Router();
 
+// Error handler wrapper for async routes
+const asyncHandler = (fn: any) => (req: any, res: any, next: any) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
 // API Health check
 apiRouter.get('/health', (req, res) => {
-  res.json({ status: 'ok', api: true });
+  res.json({ status: 'ok', api: true, db: mongoose.connection.readyState });
 });
 
 // Admin Login Route (Registered BEFORE DB middleware)
