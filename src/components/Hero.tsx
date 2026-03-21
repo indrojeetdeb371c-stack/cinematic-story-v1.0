@@ -25,7 +25,7 @@ export default function Hero() {
         <img
           src={heroImage}
           alt="Wedding Photography"
-          className="w-full h-full object-cover opacity-40"
+          className="w-full h-full object-cover opacity-100"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/20 via-dark-bg/60 to-dark-bg"></div>
